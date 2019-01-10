@@ -1,0 +1,34 @@
+#include "list.h"
+
+using namespace std;
+
+int main()
+{
+  // a VERY simple tester. You will want to throw this away and write your own.
+  list mylist;
+  list mylist2(mylist);
+  list mylist3;
+  mylist.add('a',0);
+  mylist.add('b',0);
+  mylist.output(cout);
+  mylist.add('3',0);
+  mylist.output(cout);
+  mylist.add('4',0);
+  mylist.output(cout);
+  mylist.add('5',0);
+  mylist.output(cout);
+  //  mylist3 = mylist;
+  // mylist2.output(cout);
+  //mylist2.output(cout);  // outputs <3>
+  //cout << mylist.size() << endl;   // outputs 3
+  //cout << mylist.find(2) << endl;  // outputs 1
+  //cout << mylist.get(1) << endl;   // outputs 2
+  mylist.remove_at(0);  // removes 2
+  mylist.output(cout);
+  mylist.remove_at(3);
+  mylist.output(cout);  // outputs <3, 1>  (no newline)
+  mylist.remove(40);    // nothing
+  mylist.remove(1);     
+  // mylist.output(cout);  // outputs <3>
+  return 0;
+}

@@ -1,0 +1,69 @@
+Script started on Mon 15 Dec 2014 11:06:30 AM EST
+/home/ezhaime/111/huffman
+Files copied to sandbox
+Copying harness directory
+cp: cannot open `/home/acampbel/111/asgns/asgn-huffman/test/EVAL' for reading: Permission denied
+cp: cannot open `/home/acampbel/111/asgns/asgn-huffman/test/genbig' for reading: Permission denied
+Test harness copied to sandbox
+This is a preliminary testing harness.
+
+We'll have something a little more interesting later.
+
+echo "NOTICE:  We are ONLY testing whether your program compiles"
+NOTICE:  We are ONLY testing whether your program compiles
+echo "and runs.  More exhaustive testing will be done by hand."
+and runs.  More exhaustive testing will be done by hand.
+rm -f *.o hencode hdecode
+echo "Compiling..."
+Compiling...
+make
+make[1]: Entering directory `/tmp/ezhaime-sandbox'
+g++ -c hencode.cc
+g++ -o hencode hencode.o 
+g++ -c hdecode.cc
+g++ -o hdecode hdecode.o
+make[1]: Leaving directory `/tmp/ezhaime-sandbox'
+echo "Running first test"
+Running first test
+cp src1.txt orig1.txt
+./hencode src1.txt > /dev/null
+echo "Ensure src1.txt has 0 length: "
+Ensure src1.txt has 0 length: 
+echo "Ensure orig1.txt is longer than src1.txt.huf"
+Ensure orig1.txt is longer than src1.txt.huf
+touch src1.txt	
+ls -l src1.txt orig1.txt src1.txt.huf 
+-rw-r----- 1 ezhaime ezhaime 2903 Dec 15 11:06 orig1.txt
+-rw-rw---- 1 ezhaime ezhaime    0 Dec 15 11:06 src1.txt
+-rw-rw---- 1 ezhaime ezhaime 1790 Dec 15 11:06 src1.txt.huf
+rm -f src1.txt
+./hdecode src1.txt.huf > /dev/null
+diff src1.txt orig1.txt
+echo "Running second test"
+Running second test
+cp hencode.cc ONE
+cp hencode.cc ORIG
+echo "Running first hencode..."
+Running first hencode...
+./hencode ONE
+cp ONE.huf one.huf 
+echo "Running second hencode..."
+Running second hencode...
+./hencode ONE.huf
+ls -l ORIG *.huf
+-rw-rw---- 1 ezhaime ezhaime  194447 Dec 14 15:15 kama.txt.huf
+-rw-rw---- 1 ezhaime ezhaime 2780568 Dec 15 10:17 kjv.txt.huf
+-rw-rw---- 1 ezhaime ezhaime    3001 Dec 15 11:06 one.huf
+-rw-rw---- 1 ezhaime ezhaime    3684 Dec 15 11:06 ONE.huf.huf
+-rw-rw---- 1 ezhaime ezhaime    4601 Dec 15 11:06 ORIG
+rm -f ONE
+echo "Running first hdecode..."
+Running first hdecode...
+./hdecode ONE.huf.huf > /dev/null
+echo "Running second hdecode..."
+Running second hdecode...
+./hdecode ONE.huf	> /dev/null
+diff ONE hencode.cc
+echo "Testing complete."
+Testing complete.
+Evaluation complete.

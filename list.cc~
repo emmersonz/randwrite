@@ -1,0 +1,242 @@
+/*
+  EMMERSON ZHAIME
+  DATA STRUCTURES (CPSCI 111)
+  PROJECT 4: LIST
+  10/15/2014
+
+  This program makes a class list that can create a doubly-linked list
+  with _front and _rear pointers which point to the front and rear
+   sentinels respectively. There is also a _current pointer that 
+  points to any node after the first sentinel and a_current_index
+  variable that keeps the index of the node that _current will be
+  pointing to at a given time. The list class has methods which can
+  add an element to the list, remove an element at a specified position,
+  remove a specified element,find a specific element, get an element at
+  a specified position, return the size of the list, print the whole
+  list to cout and set the current index to a specified position.
+
+ */
+
+#include "list.h"
+#include <cassert>
+
+// List node constructors provided by Prof. Campbell
+
+list_node::list_node() : prev(NULL), next(NULL) {}
+
+list_node::list_node(list_node *p, list_node *n) : prev(p), next(n) {}
+
+list_node::list_node(list_node *p, const list_element & d, list_node * n):
+  prev(p), data(d), next(n) {}
+
+// List constructors/destructor/assignment also provided.  
+// No need to change these.
+
+list::list() 
+{
+  _init();
+}
+
+list::~list()
+{
+  _destroy();
+}
+
+list::list(const list & orig)
+{
+  _copy(orig);
+}
+
+list & list::operator=(const list & rhs)
+{
+  if (this != &rhs) {
+    _destroy();
+    _copy(rhs);
+  }
+  return *this;
+}
+
+void list::_init()
+{
+  // initializes the list class.
+
+  _front = new list_node();
+  _rear = new list_node();
+  _front -> next = _rear;
+  _rear -> prev = _front;
+  _current = _rear;
+  _size = 0;
+  _current_index = 0;
+}
+
+void list::_copy(const list & orig)
+{
+  // makes a (deep) copy of the list by first creating an empty
+  // list then copy each of the elements in the original list to
+  // the  new list. _current_index and _current are set to
+  // arbitrarily in the copy.
+
+  _init();
+  for (size_t i = 0; i < orig.size(); i++)
+    add(orig.get(i), i);  
+}
+
+void list::_destroy()
+{
+  // Deletes all nodes(including the sentinels) by continuosly
+  // removing the first node in the list until the list is empty
+  // then delete the sentinels.
+
+  while(_size > 0){
+    // std:: cout << "during while" << std::endl;
+    remove_at(1);
+     std::cout << _size << std::endl;
+  }
+  std::cout << "after while" << std::endl;
+  delete _front;
+  delete _rear;
+}
+
+void list::add(const list_element & item, size_t index)
+{ 
+  // Inserts a new element at a specified position index and
+  // makes _current point to the new node containing the item.
+  // _current_index is changed to index and _size is increased
+  // by one.
+
+  _set_current_index(index);
+  list_node * q = new list_node(_current -> prev, item, _current);
+  _current = _current -> prev -> next = _current -> prev = q; 
+  _size++;  
+}
+
+void list::remove_at(size_t index)
+{
+  // Removes an element at a specified position from the list
+  // and makes _current points to the next element in the list
+  // or the rear sentinel. The size is also decreased by one.
+  //if (_size > 1)
+    //std::cout << _size << std::endl;
+  if( _size > 0 and index <=_size){ 
+    _set_current_index(index);
+    //std::cout << _current -> next -> data << std::endl;
+    list_node * temp = _current;
+    temp -> prev -> next = temp -> next;
+    temp -> next -> prev = temp -> prev;
+    _current = _current -> next;
+    delete temp;
+    _size--;
+  }
+  else
+    return;
+}
+
+void list::remove(const list_element & item)
+{
+  // removes the first occurence of item from the list.
+
+  for( size_t i = 0; i < _size; i++)
+    if (get(i) == item){
+      remove_at(i);
+      break;
+    }
+}
+
+size_t list::find(const list_element & item) const
+{
+  // Returns the index of the first position where you
+  // can find the specified item or size() if no such 
+  // integer exists.
+
+  for( size_t i = 0; i < _size; i++){
+    if (get(i) == item)
+      return i;
+  }
+  return size();
+}
+
+list_element list::get(size_t index) const
+{
+  // Returns the element at the specified index position
+  // and zero if the entered index is invalid.
+
+  if (index < _size){
+    _set_current_index(index);
+    return _current -> data;
+  }
+  return 0;  // same type as list_element
+}
+
+size_t list::size() const
+{
+  // Returns the number of elements in the list. 
+ 
+  return _size;
+}
+
+void list::output(std::ostream & ostr) const
+{
+  // output the list to ostr using format
+  // <v0, v1, v2, ..., vn-1>
+
+  ostr << "<";
+  if (_size  > 0){
+
+    // Prints the first size() - 1 elements, then the last element
+    // outside the 'for' loop to avoid a space after the last element.
+    for ( size_t i = 0; i < _size-1; i++)
+      ostr  << get(i) << ',' << ' ';
+    ostr << get(_size - 1);
+  }
+  ostr  << ">";
+}
+
+size_t abs(int a )
+{
+  // Returns the absolute value of a given integer as a size_t.
+
+  return (size_t)(a < 0 ? -a : a);
+}
+
+void list::_set_current_index(size_t index) const
+{
+  // Makes _curent point to the node holding the element at position 
+  // index, or the rear sentinel as quickly as possible then set 
+  // _current_index to index.
+
+  // Avoids changes to _current and _current_index if the list is empty
+  // and makes sure that a valid index has been entered.
+  assert(index <= size());
+  if(size() == 0)
+     return;
+ 
+  // If the current index is the closest to the the entered index, _current 
+  // moves directly from the node that it is pointing at, to the new node that
+  // it has to point at by going forward or backwards depending on the relative
+  // position of the required node.
+  // 'abs' makes sure that only distances are compared without worrying about the direction
+  // of the index from the current index.
+  if (abs(_current_index - index) <  index || size() - index){ 
+     if( _current_index <= index)
+       for( ; _current_index != index; _current_index++, _current = _current -> next){}
+     else 
+       for( ; _current_index != index; _current_index--,_current = _current -> prev){}	
+  }
+  
+  // If_current_index is not the closest to the entered index and the index is
+  // less that half the size, then the _front pointer is closest to the requred 
+  // node so _current moves to the required node by first pointing to the first node
+  // then move foward, towards the required node until it points to it.
+  else if(index <= size()/2){
+    _current = _front -> next;
+    for(_current_index = 0; _current_index != index; _current_index++,_current = _current -> next){}
+    }
+
+  // If the two possibilities above are not met, then the _rear pointer is the closest
+  // to the required node so _current moves to the required node by first pointing 
+  // to the last node then move backwards, towards the required node until it points to it.
+   else {
+     _current = _rear-> prev;
+     for( _current_index = size(); _current_index != index; _current_index--,_current = _current ->prev){}	 
+   }	
+}		  
